@@ -1,0 +1,4 @@
+.header-logo {
+    max-width: 9em;
+    margin: var(--space-3) auto 0;
+}

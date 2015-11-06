@@ -1,0 +1,16 @@
+.main-nav-item {
+    border-bottom: 1px solid var(--border-color);
+}
+    
+.main-nav-item:first-child {
+    border-top: 1px solid var(--border-color);
+}
+
+@media (--breakpoint-md) {
+    .main-nav-item:first-child {
+        border-top: none;
+    }
+    .main-nav-item {
+        border: none;
+    }
+}

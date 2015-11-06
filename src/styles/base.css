@@ -1,0 +1,83 @@
+/*
+ * Bassplate
+ * Boilerplate for Basscss with cssnext
+ * http://github.com/basscss/bassplate
+ *
+ * Remove or comment out unneeded modules and import your own files.
+ * Adjust global media queries and custom properties below.
+ *
+ */
+
+
+/* Basscss Modules */
+@import 'basscss-base-reset';
+@import 'basscss-base-forms';
+@import 'basscss-base-tables';
+@import 'basscss-base-typography';
+@import 'basscss-color-base';
+@import 'basscss-color-forms';
+@import 'basscss-color-tables';
+@import 'basscss-btn';
+@import 'basscss-btn-primary';
+@import 'basscss-btn-outline';
+@import 'basscss-type-scale';
+@import 'basscss-utility-typography';
+@import 'basscss-utility-layout';
+@import 'basscss-align';
+@import 'basscss-white-space';
+@import 'basscss-positions';
+@import 'basscss-responsive-states';
+@import 'basscss-grid';
+@import 'flex-object';
+@import 'basscss-borders';
+@import 'basscss-colors';
+@import 'basscss-background-colors';
+
+
+/* Optional Modules (not included in Basscss by default) */
+/*@import 'basscss-btn-sizes';*/
+@import 'basscss-responsive-white-space';
+/*
+@import 'basscss-color-forms-dark';
+@import 'basscss-input-range';
+@import 'basscss-progress';
+@import 'basscss-background-images';
+@import 'basscss-media-object';
+@import 'basscss-utility-headings';
+@import 'basscss-ui-utility-groups';
+@import 'basscss-table-object';
+@import 'basscss-highlight-dark';
+@import 'basscss-highlight';
+*/
+
+/* Default custom properties */
+@import 'basscss-defaults';
+
+/* Custom Modules */
+@import 'des-typography';
+@import 'des-paddings';
+@import './style';
+
+body {
+    font-weight: 300;
+}
+
+
+/* Custom media queries */
+/*
+@custom-media --breakpoint-sm (min-width: 40em);
+@custom-media --breakpoint-md (min-width: 52em);
+@custom-media --breakpoint-lg (min-width: 64em);
+*/
+
+/* Custom properties */
+:root {
+    --heading-font-family: 'Roboto Slab', serif;
+    --heading-font-weight: 300;
+    --font-family: 'Open Sans', sans-serif;
+    
+    --pre-margin-bottom: 0;
+    
+    --container-width: 75em;
+}
+

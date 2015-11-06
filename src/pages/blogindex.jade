@@ -1,0 +1,21 @@
+extends ../layout
+block main
+    section
+        each post in blog
+            div.post.border-bottom.pb1
+                h2
+                    a(href="blog.html") #{post.title}
+                time(datetime=post.date) #{post.date} #{' '}
+
+                ul.p0.inline
+                    each tag in post.tags
+                        li.inline
+                            a(href="").silver.navy.bg-darken-1.px1.mr1.rounded #{tag}
+                p.mt1 #{post.preview}
+
+    div.clearfix.pb1
+        a(href="").left.btn.btn-primary.regular
+            | ← Newer Posts
+        a(href="").right.btn.btn-primary.regular
+            | Older Posts →
+        div.overflow-hidden.sm-show.center Page 1 of 2

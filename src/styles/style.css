@@ -1,0 +1,20 @@
+@import "./style/main-nav";
+@import "./style/header-logo";
+
+.post:last-child {
+    border-bottom: none;
+}
+
+pre {
+    word-wrap: break-word;
+    overflow-x: auto;
+}
+
+@media (--breakpoint-md) {
+    .btn.md-no-active-box-shadow:active {
+        box-shadow: none;
+    }
+    .md-no-hover-box-shadow:hover {
+        box-shadow: none;
+    }
+}
