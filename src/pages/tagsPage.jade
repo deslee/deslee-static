@@ -1,6 +1,7 @@
 extends ../layout
 block main
     section
+        h1 #{pagetitle}
         each post in paginator.resolve(index)
             div.post.border-bottom.pb1
                 h2
@@ -13,12 +14,13 @@ block main
                             a(href="tag/"+tag).silver.navy.bg-darken-1.px1.mr1.rounded #{tag}
                 p.mt1 !{post.preview + ' '}
                     a(href=post.slug) ... »
-
     div.clearfix.pb1
         - var prev_page = index - 1
-        a(href= prev_page == 1 ? '' : prev_page, class={hidden: index <= 1}).left.btn.btn-primary.regular
+        - var href = prev_page == 1 ? '' : prev_page
+        a(href= 'tag/'+tag+'/'+ href, class={hidden: index <= 1}).left.btn.btn-primary.regular
             | ← Newer Posts
         - var next_page = index + 1
-        a(href=next_page, class={hidden: index >= paginator.count}).right.btn.btn-primary.regular
+        - var href = next_page
+        a(href= 'tag/'+tag+'/'+ href, class={hidden: index >= paginator.count}).right.btn.btn-primary.regular
             | Older Posts →
         div(class={hidden: index == paginator.count}).overflow-hidden.sm-show.center Page #{index} of #{paginator.count}

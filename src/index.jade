@@ -3,9 +3,23 @@ html
     head
         meta(name="viewport", content="width=device-width,initial-scale=1")
         meta(charset="utf-8")
+        title #{pagetitle ? pagetitle : title}
         if base
             base(href=base)
         | <link href='https://fonts.googleapis.com/css?family=Roboto+Slab:300|Open+Sans:300' rel='stylesheet' type='text/css'>
         | <link rel="stylesheet" href="css/style.css">
         | <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+        if meta_description
+            meta(name="description", content=meta_description.slice(0, Math.min(155, meta_description.length)))
+            meta(name="og:description", content=meta_description.slice(0, Math.min(155, meta_description.length)))
+        if meta_author
+            meta(name="author", content=meta_author)
+        if logo
+            meta(name="og:image" content=logo)
+        if meta_url
+            meta(name="og:url" content=meta_url)
+        if pagetitle
+            meta(name="og:title" content=pagetitle)
+        meta(name="og:site_name" content=title)
+        meta(name="og:type" content="website")
     block body

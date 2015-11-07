@@ -4,9 +4,8 @@ var path = require('path');
 var mkdirp = require('mkdirp');
 var rimraf = require('rimraf');
 var cssnext = require('cssnext');
-var jade = require('jade');
-var marked = require('meta-marked');
-var moment = require('moment');
+
+var paginator_generator = require('./paginator_generator');
 
 /* clean */
 rimraf.sync('./output');
@@ -14,15 +13,18 @@ mkdirp.sync('./output/css');
 
 /* define variables */
 
-var templates = {};
-var tags = {};
-var all_posts = {};
+var templates = require('./generate_templates');
+var process_result = require('./process_content');
+var all_posts = process_result.all_posts;
+var tags = process_result.tags;
+
+/* define global page variables */
 
 var scope = {
     logo: "https://deslee.me/assets/face.jpg",
-
     title: "Desmond Lee",
-
+    meta_author: "Desmond Lee",
+    meta_url: "http://deslee.me",
     nav: [
         {
             name: "Home"
@@ -36,7 +38,6 @@ var scope = {
         {
             name: "Projects"
         }
-
     ]
 };
 
@@ -49,93 +50,11 @@ fs.readFile('./src/styles/base.css', 'utf8', function(err, data) {
     fs.writeFile('./output/css/style.css', output);
 });
 
-
-/* TEMPLATE COMPILATION PHASE */
-
-/* read layout as strings */
-[
-    {
-        name: 'index',
-        templatePath: './src/pages/blogindex.jade',
-        outputPath: './output/index.html'
-    },
-    {
-        name: 'post',
-        templatePath: './src/pages/blogpost.jade',
-        outputPath: './output/'
-    }
-].forEach(function(template) {
-    var source = fs.readFileSync(template.templatePath);
-    generateTemplate(template, source);
-});
-
-/* use jade to make template compilers */
-function generateTemplate(template, source) {
-    var templatePath = template.templatePath,
-        outputPath = template.outputPath;
-    template.compile = jade.compile(source, {filename: templatePath});
-    templates[template.name] = template;
-}
-
-/* CONTENT PROCESSING PHASE */
-/* reads all the things in the content directory */
-fs.readdirSync('./content').forEach(function(file) {
-    var content = fs.readFileSync(path.join('./content', file), 'utf-8');
-    var extension = path.extname(file).toLowerCase();
-    var basename = path.basename(file, extension);
-    processContent(content, basename, extension);
-});
-
-function processContent(content, slug, extension) {
-    switch(extension) {
-        case '.md':
-            processMarkdownContent(slug, content);
-            break;
-    }
-}
-
-function processMarkdownContent(slug, content) {
-    var res = marked(content);
-    res.meta.html = res.html;
-    res.meta.slug = slug;
-    res.meta.date = moment(res.meta.date);
-    res.meta.preview = res.html.replace(/(<([^>]+)>)/ig, '').split(" ").slice(0, content.summary_count ? content.summary_count : 20).join(' ');
-
-    var post = all_posts[slug] = res.meta;
-    if (post.tags.constructor === Array) {
-        post.tags.forEach(function(tag) {
-           addTag(tag, post);
-        });
-    }
-}
-
-function addTag(tag, post) {
-    if (!tags[tag]) {
-        tags[tag] = [];
-    }
-    tags[tag].push(post);
-}
-
-
-/* GENERATION PHASE */
+/* WRITING PHASE */
 // now we must generate the stuff!
 var index = templates['index'];
 var post = templates['post'];
-
-
-
-// generate front page
-fs.writeFile(index.outputPath, index.compile(
-    Object.assign(
-        {
-            blog: Object.keys(all_posts).filter(function(slug) {
-                return true;
-            }).map(function(slug) {
-                return all_posts[slug];
-            }).sort(sort_posts).reverse()
-        }, scope
-    )
-));
+var tagsTemplate = templates['tags'];
 
 // generate each post page
 Object.keys(all_posts).forEach(function(slug) {
@@ -148,7 +67,12 @@ Object.keys(all_posts).forEach(function(slug) {
         fs.writeFile(path.join(post.outputPath, slug, "index.html"),
             post.compile(
                 Object.assign(
-                    {base: '../', post:content},
+                    {
+                        base: '../',
+                        post:content,
+                        pagetitle: content.title,
+                        meta_description: content.preview
+                    },
                     scope
                 )
             )
@@ -156,6 +80,70 @@ Object.keys(all_posts).forEach(function(slug) {
     });
 });
 
+// generate front page
+(function() {
+
+    var posts = Object.keys(all_posts).filter(function(slug) {
+        return true;
+    }).map(function(slug) {
+        return all_posts[slug];
+    }).sort(sort_posts).reverse();
+
+    var paginator = paginator_generator(posts, 4);
+    for (var i = 1; i <= paginator.count; ++i) {
+        mkdirp.sync(path.join(index.outputPath, i+""));
+        var fileName = i == 1 ? path.join(index.outputPath, "index.html") : path.join(index.outputPath, i+"", "index.html");
+        fs.writeFile(fileName, index.compile(
+            Object.assign(
+                {
+                    base: i == 1 ? './' : '../',
+                    index: i,
+                    paginator: paginator,
+                    pagetitle: scope.title
+                }, scope
+            )
+        ));
+    }
+
+
+
+})();
+
+// generate tag pages
+(function() {
+
+    Object.keys(tags).forEach(function(tag) {
+        mkdirp(path.join(tagsTemplate.outputPath, tag), function(err) {
+            if (err) {
+                console.error(err);
+                return;
+            }
+
+
+            var paginator = paginator_generator(tags[tag].sort(sort_posts).reverse(), 5);
+            for (var i = 1; i <= paginator.count; ++i) {
+
+                var fileName = i == 1 ? path.join(tagsTemplate.outputPath, tag, "index.html") : path.join(tagsTemplate.outputPath, tag, i+"", "index.html");
+                mkdirp.sync(path.join(tagsTemplate.outputPath, tag, i+""));
+                fs.writeFile(fileName,
+                    tagsTemplate.compile(
+                        Object.assign(
+                            {
+                                base: i == 1 ? '../../' : '../../../',
+                                index: i,
+                                paginator: paginator,
+                                tag: tag,
+                                pagetitle: 'Posts tagged with ' + tag
+                            },
+                            scope
+                        )
+                    )
+                )
+            }
+        });
+    });
+
+})();
 
 /* utility functions */
 
