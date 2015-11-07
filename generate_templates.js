@@ -14,13 +14,18 @@ var templates = {};
     },
     {
         name: 'post',
-        templatePath: './src/pages/blogpost.jade',
+        templatePath: './src/pages/post.jade',
         outputPath: './output/'
     },
     {
         name: 'tags',
         templatePath: './src/pages/tagsPage.jade',
         outputPath: './output/tag'
+    },
+    {
+        name: 'archive',
+        templatePath: './src/pages/archive.jade',
+        outputPath: './output/archive'
     }
 ].forEach(function(template) {
     var source = fs.readFileSync(template.templatePath);

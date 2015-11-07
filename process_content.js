@@ -31,7 +31,7 @@ function processMarkdownContent(slug, content) {
     res.meta.preview = res.html.replace(/(<([^>]+)>)/ig, '').split(" ").slice(0, content.summary_count ? content.summary_count : 20).join(' ');
 
     var post = all_posts[slug] = res.meta;
-    if (post.tags.constructor === Array) {
+    if (post.tags && post.tags.constructor === Array) {
         post.tags.forEach(function(tag) {
             addTag(tag, post);
         });

@@ -1,11 +1,11 @@
 extends ./index.jade
 
 block body
-    body(style={height: '100vh'}).container.flex.flex-column
+    body.container.flex.flex-column
         div.clearfix.flex-grow
             header.px2.col.col-12.md-col-3.center.md-left
                 a(href="")
-                    img(src=logo).header-logo.circle.block
+                    img(src=logo, style={height: "9em", width: "9em"}).header-logo.circle.block
                 h1 #{title}
 
                 nav
@@ -25,3 +25,12 @@ block body
 
         footer.gray.left-align.p2
             section Desmond Lee © 2015
+
+        script(src="https://code.jquery.com/jquery-1.11.3.min.js")
+        script(src="https://cdnjs.cloudflare.com/ajax/libs/fitvids/1.1.0/jquery.fitvids.min.js")
+        | <script>
+        |   $(document).ready(function(){
+        |   // Target your .container, .wrapper, .post, etc.
+        |   $("main[role='main']").fitVids();
+        |   });
+        | </script>

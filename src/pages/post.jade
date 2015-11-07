@@ -1,0 +1,14 @@
+extends ../layout
+block main
+    if !post.page
+        h1 #{post.title}
+    if !post.page && post.date
+        time(datetime=post.date.format("YYYY-MM-DD")) #{post.date.format("YYYY-MM-DD")} #{' '}
+    if post.tags
+        ul.p0.inline
+            each tag in post.tags
+                li.inline
+                    a(href="tag/" + tag).silver.navy.bg-darken-1.px1.mr1.rounded #{tag}
+
+    .mt1
+        p.mt1 !{post.html}

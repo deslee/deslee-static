@@ -22,3 +22,20 @@ pre {
 .hidden {
     visibility: hidden;
 }
+
+html {
+    background: var(--silver);
+}
+
+body {
+    background: var(--white);
+    min-height: 100vh;
+}
+
+pre {
+    background-color: #efefef;
+    overflow-x: auto;
+    padding: 1em;
+    border-radius: .5em;
+    margin-bottom: var(--paragraph-margin-bottom);
+}

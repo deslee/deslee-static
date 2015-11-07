@@ -1,0 +1,15 @@
+extends ../layout
+block main
+    section
+        h1 Archive
+
+        each post in posts
+            div.post.border-bottom.pb1
+                h2
+                    a(href=post.slug) #{post.title}
+                time(datetime=post.date.format("YYYY-MM-DD")) #{post.date.format("YYYY-MM-DD")} #{' '}
+
+                ul.p0.inline
+                    each tag in post.tags
+                        li.inline
+                            a(href="tag/"+tag).silver.navy.bg-darken-1.px1.mr1.rounded #{tag}

@@ -27,17 +27,21 @@ var scope = {
     meta_url: "http://deslee.me",
     nav: [
         {
-            name: "Home"
+            name: "Home",
+            href: ''
         },
         {
-            name: "About"
+            name: "About",
+            href: 'about'
         },
         {
-            name: "Archive"
+            name: "Archive",
+            href: 'archive'
         },
-        {
-            name: "Projects"
-        }
+        /*{
+            name: "Projects",
+            href: 'projects'
+        }*/
     ]
 };
 
@@ -66,14 +70,14 @@ Object.keys(all_posts).forEach(function(slug) {
         }
         fs.writeFile(path.join(post.outputPath, slug, "index.html"),
             post.compile(
-                Object.assign(
+                Object.assign({},
+                    scope,
                     {
                         base: '../',
                         post:content,
                         pagetitle: content.title,
                         meta_description: content.preview
-                    },
-                    scope
+                    }
                 )
             )
         );
@@ -84,25 +88,32 @@ Object.keys(all_posts).forEach(function(slug) {
 (function() {
 
     var posts = Object.keys(all_posts).filter(function(slug) {
-        return true;
+        return !all_posts[slug].page;
     }).map(function(slug) {
         return all_posts[slug];
     }).sort(sort_posts).reverse();
 
     var paginator = paginator_generator(posts, 4);
     for (var i = 1; i <= paginator.count; ++i) {
-        mkdirp.sync(path.join(index.outputPath, i+""));
-        var fileName = i == 1 ? path.join(index.outputPath, "index.html") : path.join(index.outputPath, i+"", "index.html");
-        fs.writeFile(fileName, index.compile(
-            Object.assign(
-                {
-                    base: i == 1 ? './' : '../',
-                    index: i,
-                    paginator: paginator,
-                    pagetitle: scope.title
-                }, scope
-            )
-        ));
+        mkdirp(path.join(index.outputPath, i+""), function(i, err) {
+            if (err) {
+                console.error(err);
+                return;
+            }
+            var fileName = i == 1 ?
+                path.join(index.outputPath, "index.html") :
+                path.join(index.outputPath, i+"", "index.html");
+            fs.writeFile(fileName, index.compile(
+                Object.assign({}, scope,
+                    {
+                        base: i == 1 ? './' : '../',
+                        index: i,
+                        paginator: paginator,
+                        pagetitle: scope.title
+                    }
+                )
+            ));
+        }.bind(null, i));
     }
 
 
@@ -123,30 +134,75 @@ Object.keys(all_posts).forEach(function(slug) {
             var paginator = paginator_generator(tags[tag].sort(sort_posts).reverse(), 5);
             for (var i = 1; i <= paginator.count; ++i) {
 
-                var fileName = i == 1 ? path.join(tagsTemplate.outputPath, tag, "index.html") : path.join(tagsTemplate.outputPath, tag, i+"", "index.html");
-                mkdirp.sync(path.join(tagsTemplate.outputPath, tag, i+""));
-                fs.writeFile(fileName,
-                    tagsTemplate.compile(
-                        Object.assign(
-                            {
-                                base: i == 1 ? '../../' : '../../../',
-                                index: i,
-                                paginator: paginator,
-                                tag: tag,
-                                pagetitle: 'Posts tagged with ' + tag
-                            },
-                            scope
+                var fileName = i == 1 ?
+                    path.join(tagsTemplate.outputPath, tag, "index.html") :
+                    path.join(tagsTemplate.outputPath, tag, i+"", "index.html");
+                mkdirp(path.join(tagsTemplate.outputPath, tag, i+""), function(i, err) {
+
+                    if (err) {
+                        console.error(err);
+                        return;
+                    }
+
+                    fs.writeFile(fileName,
+                        tagsTemplate.compile(
+                            Object.assign({},
+                                scope,
+                                {
+                                    base: i == 1 ? '../../' : '../../../',
+                                    index: i,
+                                    paginator: paginator,
+                                    tag: tag,
+                                    pagetitle: 'Posts tagged with ' + tag
+                                }
+                            )
                         )
                     )
-                )
+                }.bind(null, i));
             }
         });
     });
 
 })();
 
-/* utility functions */
 
+// generate archives page
+
+(function() {
+
+    var posts = Object.keys(all_posts).filter(function(slug) {
+        return !all_posts[slug].page;
+    }).map(function(slug) {
+        return all_posts[slug];
+    }).sort(sort_posts).reverse();
+
+    var archiveTemplate = templates['archive'];
+
+    mkdirp(path.join(archiveTemplate.outputPath), function(err) {
+
+        if (err) {
+            console.error(err);
+            return;
+        }
+
+        fs.writeFile(path.join(archiveTemplate.outputPath, "index.html"), archiveTemplate.compile(
+            Object.assign({},
+                scope,
+                {
+                    posts: posts,
+                    base: '../',
+                    pagetitle: 'Archive'
+                }
+            )
+
+        ))
+
+
+    });
+
+})();
+
+/* utility functions */
 // sort function
 function sort_posts(post_a, post_b) {
     if (post_a.date.isBefore(post_b.date)) {
