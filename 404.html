@@ -1,0 +1,20 @@
+<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><meta charset="utf-8"><title>Archive</title><link href='https://fonts.googleapis.com/css?family=Roboto+Slab:300|Open+Sans:300|Source+Code+Pro' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css"><meta name="author" content="Desmond Lee"><meta name="og:image" content="face-sm.jpg"><meta name="og:url" content="http://deslee.me"><meta name="og:title" content="Archive"><meta name="og:site_name" content="Desmond Lee"><meta name="og:type" content="website"></head><body class="container flex flex-column"><div class="clearfix flex-grow"><header class="px2 col col-12 md-col-3 center md-left"><a href=""><img src="face-sm.jpg" style="height:9em;width:9em" class="header-logo circle block"></a><h1>Desmond Lee</h1><nav><ul class="col-12 p0 list-reset inline-block clearfix blue"><li class="py1 pl0 pr0 md-no-hover-box-shadow md-no-active-box-shadow block col-12 btn btn-outline not-rounded y-group-item regular white main-nav-item"><a href="" class="block">Home</a></li><li class="py1 pl0 pr0 md-no-hover-box-shadow md-no-active-box-shadow block col-12 btn btn-outline not-rounded y-group-item regular white main-nav-item"><a href="about" class="block">About</a></li><li class="py1 pl0 pr0 md-no-hover-box-shadow md-no-active-box-shadow block col-12 btn btn-outline not-rounded y-group-item regular white main-nav-item"><a href="archive" class="block">Archive</a></li></ul></nav><p>I'm a Software Engineer from Dallas. This is my website and blog.</p></header><main role="main" class="px2 col col-12 md-col-9 lg-col-6"><h1>Not Found</h1><div class="mt1"><p class="mt1">The page you requested could not be found</p></div></main><section class="col col-12 lg-col-3"><hr class="lg-hide"><div class="px2 col col-12 md-col-4 lg-col-12"><h3>Friends</h3><ul class="p0 list-reset"><li><a href="http://elizabethdelrosario.com/">Elizabeth Del Rosario</a></li><li><a href="http://spencer-hawkins.com/">Spencer Hawkins</a></li></ul></div><div class="px2 col col-12 md-col-4 lg-col-12"><h3>Contact me</h3><form action="https://emailsender-deslee.rhcloud.com/" method="post"><input hidden type="text" value=""><label for="email">Your Email</label><input id="email" name="email" type="email" class="block field col-12"><label for="message">Message</label><textarea id="message" name="message" class="block field col-12"></textarea><input type="submit" class="btn btn-primary mt1"></form></div></section></div><footer class="gray left-align p2"><section>Desmond Lee © 2015</section></footer><script src="https://cdnjs.cloudflare.com/ajax/libs/instantclick/3.0.1/instantclick.min.js" data-no-instant></script><script src="https://code.jquery.com/jquery-1.11.3.min.js" data-no-instant></script><script src="https://cdnjs.cloudflare.com/ajax/libs/fitvids/1.1.0/jquery.fitvids.min.js" data-no-instant></script><script>
+  $(document).ready(function(){
+  // Target your .container, .wrapper, .post, etc.
+  $("main[role='main']").fitVids();
+  });
+</script><script data-no-instant>InstantClick.init();
+
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q || []).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+//ga('create', 'UA-69448796-2', 'auto');
+
+InstantClick.on('change', function () {
+    console.log(location.pathname);
+    ga('send', 'pageview', location.pathname + location.search);
+});</script></body></html>
