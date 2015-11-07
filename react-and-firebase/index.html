@@ -12,9 +12,21 @@ A few weeks ago, I experimented with Facebook&amp;#39;s ReactJS. ReactJS is a to
 <p>I had a CMS running on my server at the time, so I modified it to use Firebase and ReactJS. At a high level, it&#39;s very simple. I had a ReactJS component called a &quot;Renderable&quot; that queries the Firebase store to get the text, which is then compiled to HTML (if it is formatted in markdown). When Firebase receives an update from the server, an event is triggered that causes the &quot;Renderable&quot; to render again.</p>
 <h1 id="what-i-ve-learned">What I&#39;ve learned</h1>
 <p>This was my first front-end project outside of AngularJS, so I was pretty enthusiastic about it. I&#39;m always excited to learn new frameworks and architectures.</p>
-</p></div></main><section class="col col-12 lg-col-3"><hr class="lg-hide"><div class="px2 col col-12 md-col-4 lg-col-12"><h3>Friends</h3><ul class="p0 list-reset"><li><a href="http://elizabethdelrosario.com/">Elizabeth Del Rosario</a></li><li><a href="http://spencer-hawkins.com/">Spencer Hawkins</a></li></ul></div><div class="px2 col col-12 md-col-4 lg-col-12"><h3>Contact me</h3><form><label for="email">Your Email</label><input id="email" name="email" type="email" class="block field col-12"><label for="message">Message</label><textarea id="message" name="message" class="block field col-12"></textarea><input type="submit" class="btn btn-primary mt1"></form></div></section></div><footer class="gray left-align p2"><section>Desmond Lee © 2015</section></footer><script src="https://code.jquery.com/jquery-1.11.3.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/fitvids/1.1.0/jquery.fitvids.min.js"></script><script>
+</p></div></main><section class="col col-12 lg-col-3"><hr class="lg-hide"><div class="px2 col col-12 md-col-4 lg-col-12"><h3>Friends</h3><ul class="p0 list-reset"><li><a href="http://elizabethdelrosario.com/">Elizabeth Del Rosario</a></li><li><a href="http://spencer-hawkins.com/">Spencer Hawkins</a></li></ul></div><div class="px2 col col-12 md-col-4 lg-col-12"><h3>Contact me</h3><form action="https://emailsender-deslee.rhcloud.com/" method="post"><label for="email">Your Email</label><input id="email" name="email" type="email" class="block field col-12"><label for="message">Message</label><textarea id="message" name="message" class="block field col-12"></textarea><input type="submit" class="btn btn-primary mt1"></form></div></section></div><footer class="gray left-align p2"><section>Desmond Lee © 2015</section></footer><script src="https://cdnjs.cloudflare.com/ajax/libs/instantclick/3.0.1/instantclick.min.js" data-no-instant></script><script src="https://code.jquery.com/jquery-1.11.3.min.js" data-no-instant></script><script src="https://cdnjs.cloudflare.com/ajax/libs/fitvids/1.1.0/jquery.fitvids.min.js" data-no-instant></script><script>
   $(document).ready(function(){
   // Target your .container, .wrapper, .post, etc.
   $("main[role='main']").fitVids();
   });
-</script></body></html>
+</script><script data-no-instant>InstantClick.init();
+
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q || []).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+//ga('create', 'UA-69448796-2', 'auto');
+
+InstantClick.on('change', function () {
+    console.log(location.pathname);
+    ga('send', 'pageview', location.pathname + location.search);
+});</script></body></html>
