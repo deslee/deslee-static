@@ -26,6 +26,11 @@ var templates = {};
         name: 'archive',
         templatePath: './src/pages/archive.jade',
         outputPath: './output/archive'
+    },
+    {
+        name: '404',
+        templatePath: './src/pages/404.jade',
+        outputPath: './output/'
     }
 ].forEach(function(template) {
     var source = fs.readFileSync(template.templatePath);

@@ -21,7 +21,7 @@ var tags = process_result.tags;
 /* define global page variables */
 
 var scope = {
-    logo: "https://deslee.me/assets/face.jpg",
+    logo: "face-sm.jpg",
     title: "Desmond Lee",
     meta_author: "Desmond Lee",
     meta_url: "http://deslee.me",
@@ -202,10 +202,37 @@ Object.keys(all_posts).forEach(function(slug) {
 
 })();
 
+var notFoundTemplate = templates['404'];
+/* generate 404 */
+(function() {
+
+    mkdirp(path.join(notFoundTemplate.outputPath), function(err) {
+
+        if (err) {
+            console.error(err);
+            return;
+        }
+
+        fs.writeFile(path.join(notFoundTemplate.outputPath, "404.html"), notFoundTemplate.compile(
+            Object.assign({},
+                scope,
+                {
+                    pagetitle: 'Archive'
+                }
+            )
+
+        ))
+
+
+    });
+
+})();
+
 
 /* COPY OTHER FILES */
 (function(){
     fs.createReadStream("./src/favicon.ico").pipe(fs.createWriteStream("./output/favicon.ico"));
+    fs.createReadStream("./src/face-sm.jpg").pipe(fs.createWriteStream("./output/face-sm.jpg"));
 })();
 
 /* utility functions */
