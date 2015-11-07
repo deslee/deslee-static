@@ -1,6 +1,7 @@
 ---
 title:   Experimented with Polymer
-date:    "2014-11-17"
+date:    2014-11-17
+summary_count: 16
 tags:
   - polymer
   - dev

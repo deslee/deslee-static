@@ -1,0 +1,66 @@
+<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><meta charset="utf-8"><base href="../"><link href='https://fonts.googleapis.com/css?family=Roboto+Slab:300|Open+Sans:300' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css"></head><body style="height:100vh" class="container flex flex-column"><div class="clearfix flex-grow"><header class="px2 col col-12 md-col-3 center md-left"><a href=""><img src="https://deslee.me/assets/face.jpg" class="header-logo circle block"></a><h1>Desmond Lee</h1><nav><ul class="col-12 p0 list-reset inline-block clearfix blue"><li class="py1 pl0 pr0 md-no-hover-box-shadow md-no-active-box-shadow block col-12 btn btn-outline not-rounded y-group-item regular white main-nav-item"><a class="block">Home</a></li><li class="py1 pl0 pr0 md-no-hover-box-shadow md-no-active-box-shadow block col-12 btn btn-outline not-rounded y-group-item regular white main-nav-item"><a class="block">About</a></li><li class="py1 pl0 pr0 md-no-hover-box-shadow md-no-active-box-shadow block col-12 btn btn-outline not-rounded y-group-item regular white main-nav-item"><a class="block">Archive</a></li><li class="py1 pl0 pr0 md-no-hover-box-shadow md-no-active-box-shadow block col-12 btn btn-outline not-rounded y-group-item regular white main-nav-item"><a class="block">Projects</a></li></ul></nav><p>This is my personal blog</p><p>I'm a Software Engineer from Dallas. I like blah blah blah and blah blah blah.</p></header><main role="main" class="px2 col col-12 md-col-9 lg-col-6"><h1>Getting started with Google Calendar API</h1><time datetime="2014-11-23">2014-11-23  </time><ul class="p0 inline"><li class="inline"><a href="tags/apis" class="silver navy bg-darken-1 px1 mr1 rounded">apis</a></li><li class="inline"><a href="tags/dev" class="silver navy bg-darken-1 px1 mr1 rounded">dev</a></li></ul><div class="mt1"><p class="mt1"><p>I have begun experimenting with <a href="https://developers.google.com/google-apps/app-apis">Google Apps Application APIs</a>, with the intention of building a Javascript client-side application to interface with Google Calendar. I&#39;m going to demonstrate what I&#39;ve learned with a scenario flow for accessing the Google Calendar REST API.</p>
+<h1 id="what-i-ve-learned">What I&#39;ve learned</h1>
+<p>Google APIs use the OAuth 2.0 protocol for authentication and authorization. In this scenario, <em>Authentication</em> is the process of verifying the identity of a user, and <em>Authorization</em> is the process of determing which actions are allowed, usually based on the identity of the user. They are usually both referred to as <em>auth</em>, because both are requirements that are central to the security of a system. To understand more about the OAuth2 protocol, refer to <a href="http://aaronparecki.com/articles/2012/07/29/1/oauth2-simplified">this</a> guide.</p>
+<h1 id="steps">Steps</h1>
+<p>In this scenario, we will use Google APIs OAuth2 protocol to request an authorization token, which will allow us to access the <a href="https://developers.google.com/google-apps/calendar/firstapp">Google Calendar API</a></p>
+<h2 id="setting-up-the-service">Setting up the service</h2>
+<p>We need to set up the service (google) so it will recognize the client.</p>
+<ol>
+<li>First, go to the <a href="https://console.developers.google.com/project">Google Developers Console</a> and set up a new Project.</li>
+<li>Click on the Project to select it,</li>
+<li>Afterwards, click on the <strong>Credentials</strong> item in the menu, under the <strong>APIs &amp; Auth</strong> section of the menu.</li>
+<li>Click the <strong>Create new Client ID</strong> button.</li>
+<li>Select <strong>Installed Application</strong></li>
+</ol>
+<p>On the page, you will see a section titled <strong>Client ID for native application</strong>. Within the section, there should be 3 items:</p>
+<ol>
+<li>Client ID</li>
+<li>Client Secret</li>
+<li>Redirect URIs</li>
+</ol>
+<p>Next, click on <strong>Consent screen</strong> under the <strong>APIs &amp; Auth</strong> section of the menu, and create your consent screen. Be sure to choose a support email address. This screen is what the user will see when he or she authenticates with the Google OAuth2 protocol.</p>
+<h2 id="getting-an-authorization-code">Getting an authorization code</h2>
+<p>The authorization code is used to request a Google APIs Authorization token from Google&#39;s OAuth2 protocol.</p>
+<p>Make a GET request to this URI: <code>https://accounts.google.com/o/oauth2/auth</code></p>
+<p>Provide these query parameters:</p>
+<ol>
+<li><em>response_type</em>=code<ul>
+<li>This is to tell the service that we want an authorization code</li>
+</ul>
+</li>
+<li><em>client_id</em>=[Your Client ID]</li>
+<li><em>redirect_uri</em>=urn:ietf:wg:oauth:2.0:oob<ul>
+<li>I&#39;ll explain this later</li>
+</ul>
+</li>
+<li><em>scope</em>=<a href="https://www.googleapis.com/auth/calendar">https://www.googleapis.com/auth/calendar</a></li>
+</ol>
+<p>Your request should look like this:</p>
+<pre><code>https://accounts.google.com/o/oauth2/auth?response_type=code&amp;client_id=[Your CLIENTID]&amp;redirect_uri=urn%3Aietf%3Awg%3Aoauth%3A2.0%3Aoob&amp;scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcalendar
+</code></pre><p>This will redirect to a page where the user can log into Google and grant access to your app.</p>
+<p>After you grant access to your app, it will redirect you to a special page with an authorization code. This is why we chose <code>urn:ietf:wg:oauth:2.0:oob</code> as the <code>redirect_uri</code>. With this code, the application can request an <em>Authorization Token</em> from Google APis.</p>
+<p>Be sure to copy the authorization code, we will use this in the next step.</p>
+<h2 id="getting-an-authorization-token">Getting an authorization token</h2>
+<p>Make a POST request to this URI: <code>https://accounts.google.com/o/oauth2/token</code></p>
+<p>In the header, set <code>Content-Type</code> to <code>application/x-www-form-urlencoded</code>.
+In the request body, set these parameters:</p>
+<ol>
+<li><em>code</em>=[Authorization code from pervious step]</li>
+<li><em>client_id</em>=[Your Client ID]</li>
+<li><em>grant_type</em>=authorization_code</li>
+<li><em>secret</em>=[Your Client Secret]</li>
+<li><em>redirect_uri</em>urn:ietf:wg:oauth:2.0:oob</li>
+</ol>
+<p>After you make this request, you will get a JSON response. In the body data, there will be a property called <code>access_token</code>. This is the token we will use to access the Google Calendar API.</p>
+<h2 id="making-an-api-request-">Making an API request.</h2>
+<p>Make a GET request to this URI:
+<code>https://www.googleapis.com/calendar/v3/users/me/calendarList</code></p>
+<p>In the header, set <code>Authorization</code> to <code>Bearer [Your Token]</code></p>
+<p>After you make this request, you will get a JSON response containing the user&#39;s calendar list on Google Calendar. To understand this response, consult Google&#39;s <a href="https://developers.google.com/google-apps/calendar/v3/reference/calendarList#resource">Resource Representation for CalendarList</a>.</p>
+<p>For general API documentation, see <a href="https://developers.google.com/google-apps/calendar/v3/reference/">this reference</a>.</p>
+<h2 id="play-with-the-api-explorer">Play with the API explorer</h2>
+<p>Visit the <a href="https://developers.google.com/apis-explorer/#s/calendar/v3/">Calendar API explorer</a> to explore the API without needing to write any code.  </p>
+</p></div></main><section class="col col-12 lg-col-3"><hr class="lg-hide"><div class="px2 col col-12 md-col-4 lg-col-12"><h3>Cool things</h3><ul class="p0 list-reset"><li><a href="#">Superwinner</a></li></ul></div><div class="px2 col col-12 md-col-4 lg-col-12"><h3>Friends</h3><ul class="p0 list-reset"><li><a href="#">Elizabeth Del Rosario</a></li><li><a href="#">Spencer Hawkins</a></li></ul></div><div class="px2 col col-12 md-col-4 lg-col-12"><h3>Contact me</h3><form><label for="email">Your Email</label><input id="email" name="email" type="email" class="block field col-12"><label for="message">Message</label><textarea id="message" name="message" class="block field col-12"></textarea><input type="submit" class="btn btn-primary mt1"></form></div><div class="px2 col col-12"><h3>Tweets<i class="fa fa-twitter blue"></i></h3><ul class="list-reset m0"><li class="mb2"><span>LIVE on<a href="https://twitter.com/hashtag/Periscope">#Periscope</a>: Test post please ignore<a href="https://www.periscope.tv/w/aPEO9jFtTUVQcVZwWm9RR2J8MUJkR1lhZ3B2a0xHWAmho6winOZjGQdTkIYIoW3VTTuZVB_mvrjmDpnEiafN">https://t.co/nbGf85PrzV</a></span><span> </span><a href="https://twitter.com/desmond_c_lee/status/655042478081359872">Oct 16</a></li><li class="mb2"><span>RT<a href="https://twitter.com/amandapalmer">@amandapalmer</a>:<a href="https://twitter.com/granadatheater">@granadatheater</a> I AM BACKSTAGE. YET I CAN SEE YOU. I AM MAGIC.</span><span> </span><a href="https://twitter.com/desmond_c_lee/status/588503947926589441">Apr 15</a></li><li class="mb2"><span><a href="https://twitter.com/granadatheater">@granadatheater</a> this purple haze stuff is good!</span><span> </span><a href="https://twitter.com/desmond_c_lee/status/588503267010711552">Apr 15</a></li><li class="mb2"><span>I'm checking out UXPin - The UX Design App<a href="http://uxpin.com/?utm_source=spreadlove&amp;utm_medium=twitter&amp;utm_campaign=trial_extend">http://t.co/myTotxXWvt</a> Join me!<a href="https://twitter.com/hashtag/ux">#ux</a><a href="https://twitter.com/hashtag/design">#design</a><a href="https://twitter.com/hashtag/uxpin">#uxpin</a><span> </span><a href="https://twitter.com/desmond_c_lee/status/577922233663778816">Mar 17</a></span><li class="mb2"><span>specifying msvs version in npm config....<a href="http://disq.us/8l5rqa">http://t.co/LND303Lnrg</a></span><span> </span><a href="https://twitter.com/desmond_c_lee/status/539155244110737408">Nov 30</a></li><li class="mb2"><span>just updated my site once again:<a href="http://deslee.me">http://t.co/atYj974MOv</a> technologies used:<a href="https://twitter.com/hashtag/gulp">#gulp</a><a href="https://twitter.com/hashtag/reactjs">#reactjs</a><a href="https://twitter.com/hashtag/facebook">#facebook</a><a href="https://twitter.com/hashtag/nodejs">#nodejs</a></span><span> </span><a href="https://twitter.com/desmond_c_lee/status/536503302565789699">Nov 23</a></li><li class="mb2"><span>RT<a href="https://twitter.com/PlayFluent">@PlayFluent</a>:<a href="https://twitter.com/hashtag/winning">#winning</a> x10000 “<a href="https://twitter.com/b_cavello">@b_cavello</a>Need some instant gratification?<a href="https://twitter.com/desmond_c_lee">@desmond_c_lee</a>'s<a href="https://twitter.com/hashtag/lovejam2014">#lovejam2014</a> game has you covered:
+http://t.c…</span><span> </span><a href="https://twitter.com/desmond_c_lee/status/536502253608120320">Nov 23</a></li><li class="mb2"><span>music so excellent i just happily paid 4 bones for it @bandcamp:<a href="http://michaelwaddle.bandcamp.com/album/outer-space">http://t.co/4UcIGLjR</a></span><span> </span><a href="https://twitter.com/desmond_c_lee/status/268590362824699906">Nov 13</a></li></li></ul></div></section></div><footer class="gray left-align p2"><section>Desmond Lee © 2015</section></footer></body></html>

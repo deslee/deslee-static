@@ -4,14 +4,15 @@ block main
         each post in blog
             div.post.border-bottom.pb1
                 h2
-                    a(href="blog.html") #{post.title}
-                time(datetime=post.date) #{post.date} #{' '}
+                    a(href=post.slug) #{post.title}
+                time(datetime=post.date.format("YYYY-MM-DD")) #{post.date.format("YYYY-MM-DD")} #{' '}
 
                 ul.p0.inline
                     each tag in post.tags
                         li.inline
-                            a(href="").silver.navy.bg-darken-1.px1.mr1.rounded #{tag}
-                p.mt1 #{post.preview}
+                            a(href="tags/"+tag).silver.navy.bg-darken-1.px1.mr1.rounded #{tag}
+                p.mt1 !{post.preview + ' '}
+                    a(href=post.slug) ... »
 
     div.clearfix.pb1
         a(href="").left.btn.btn-primary.regular
