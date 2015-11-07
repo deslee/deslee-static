@@ -202,6 +202,12 @@ Object.keys(all_posts).forEach(function(slug) {
 
 })();
 
+
+/* COPY OTHER FILES */
+(function(){
+    fs.createReadStream("./src/favicon.ico").pipe(fs.createWriteStream("./output/favicon.ico"));
+})();
+
 /* utility functions */
 // sort function
 function sort_posts(post_a, post_b) {

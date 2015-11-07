@@ -8,7 +8,8 @@ hr.lg-hide
             a(href='http://spencer-hawkins.com/') Spencer Hawkins
 .px2.col.col-12.md-col-4.lg-col-12
     h3 Contact me
-    form
+    form(action="https://emailsender-deslee.rhcloud.com/", method="post")
+        input(hidden type="text" value="")
         label(for='email') Your Email
         input#email.block.field.col-12(name='email', type='email')
         label(for='message') Message
