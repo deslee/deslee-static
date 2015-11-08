@@ -4,6 +4,9 @@ var path = require('path');
 var mkdirp = require('mkdirp');
 var rimraf = require('rimraf');
 var cssnext = require('cssnext');
+var zlib = require('zlib');
+var crypto = require('crypto');
+var stream = require('stream');
 
 var paginator_generator = require('./paginator_generator');
 
@@ -19,9 +22,9 @@ var all_posts = process_result.all_posts;
 var tags = process_result.tags;
 
 /* define global page variables */
-
+var cryptohash = crypto.randomBytes(16).toString('hex');
 var scope = {
-    logo: "face-sm.jpg",
+    logo: "face-sm." + cryptohash + ".cached.jpg",
     title: "Desmond Lee",
     meta_author: "Desmond Lee",
     meta_url: "http://deslee.me",
@@ -42,7 +45,8 @@ var scope = {
             name: "Projects",
             href: 'projects'
         }*/
-    ]
+    ],
+    cache_hash: cryptohash
 };
 
 /* compile the css */
@@ -51,7 +55,14 @@ fs.readFile('./src/styles/base.css', 'utf8', function(err, data) {
         from: "./src/styles/base.css",
         compress: true
     });
-    fs.writeFile('./output/css/style.css', output);
+
+    // compress gzip
+    var s = new stream.Readable();
+    s._read = function noop(){}
+    s.push(output);
+    s.push(null);
+
+    s.pipe(zlib.createGzip()).pipe(fs.createWriteStream('./output/css/style.' + scope.cache_hash + '.cached.css'));
 });
 
 /* WRITING PHASE */
@@ -68,19 +79,21 @@ Object.keys(all_posts).forEach(function(slug) {
             console.error(err);
             return;
         }
-        fs.writeFile(path.join(post.outputPath, slug, "index.html"),
-            post.compile(
-                Object.assign({},
-                    scope,
-                    {
-                        base: '../',
-                        post:content,
-                        pagetitle: content.title,
-                        meta_description: content.preview
-                    }
-                )
+
+        var postContent = post.compile(
+            Object.assign({},
+                scope,
+                {
+                    base: '../',
+                    post:content,
+                    pagetitle: content.title,
+                    meta_description: content.preview
+                }
             )
         );
+
+        writeCompressedOutputToFile(postContent, path.join(post.outputPath, slug, "index.html"))
+
     });
 });
 
@@ -103,7 +116,8 @@ Object.keys(all_posts).forEach(function(slug) {
             var fileName = i == 1 ?
                 path.join(index.outputPath, "index.html") :
                 path.join(index.outputPath, i+"", "index.html");
-            fs.writeFile(fileName, index.compile(
+
+            var indexContent = index.compile(
                 Object.assign({}, scope,
                     {
                         base: i == 1 ? './' : '../',
@@ -112,7 +126,9 @@ Object.keys(all_posts).forEach(function(slug) {
                         pagetitle: scope.title
                     }
                 )
-            ));
+            );
+
+            writeCompressedOutputToFile(indexContent, fileName)
         }.bind(null, i));
     }
 
@@ -144,20 +160,21 @@ Object.keys(all_posts).forEach(function(slug) {
                         return;
                     }
 
-                    fs.writeFile(fileName,
-                        tagsTemplate.compile(
-                            Object.assign({},
-                                scope,
-                                {
-                                    base: i == 1 ? '../../' : '../../../',
-                                    index: i,
-                                    paginator: paginator,
-                                    tag: tag,
-                                    pagetitle: 'Posts tagged with ' + tag
-                                }
-                            )
+                    var tagsPageContent = tagsTemplate.compile(
+                        Object.assign({},
+                            scope,
+                            {
+                                base: i == 1 ? '../../' : '../../../',
+                                index: i,
+                                paginator: paginator,
+                                tag: tag,
+                                pagetitle: 'Posts tagged with ' + tag
+                            }
                         )
                     )
+
+
+                    writeCompressedOutputToFile(tagsPageContent, fileName)
                 }.bind(null, i));
             }
         });
@@ -185,17 +202,15 @@ Object.keys(all_posts).forEach(function(slug) {
             return;
         }
 
-        fs.writeFile(path.join(archiveTemplate.outputPath, "index.html"), archiveTemplate.compile(
-            Object.assign({},
-                scope,
-                {
-                    posts: posts,
-                    base: '../',
-                    pagetitle: 'Archive'
-                }
-            )
-
-        ))
+        var archivesPageContent = archiveTemplate.compile(Object.assign({},
+            scope,
+            {
+                posts: posts,
+                base: '../',
+                pagetitle: 'Archive'
+            }
+        ));
+        writeCompressedOutputToFile(archivesPageContent, path.join(archiveTemplate.outputPath, "index.html"))
 
 
     });
@@ -213,15 +228,14 @@ var notFoundTemplate = templates['404'];
             return;
         }
 
-        fs.writeFile(path.join(notFoundTemplate.outputPath, "404.html"), notFoundTemplate.compile(
+        writeCompressedOutputToFile(notFoundTemplate.compile(
             Object.assign({},
                 scope,
                 {
                     pagetitle: 'Archive'
                 }
             )
-
-        ))
+        ), path.join(notFoundTemplate.outputPath, "404.html"))
 
 
     });
@@ -232,7 +246,7 @@ var notFoundTemplate = templates['404'];
 /* COPY OTHER FILES */
 (function(){
     fs.createReadStream("./src/favicon.ico").pipe(fs.createWriteStream("./output/favicon.ico"));
-    fs.createReadStream("./src/face-sm.jpg").pipe(fs.createWriteStream("./output/face-sm.jpg"));
+    fs.createReadStream("./src/face-sm.jpg").pipe(fs.createWriteStream("./output/face-sm." + scope.cache_hash + ".cached.jpg"));
 })();
 
 /* utility functions */
@@ -245,4 +259,19 @@ function sort_posts(post_a, post_b) {
     } else {
         return 1;
     }
+}
+
+
+function writeCompressedOutputToFile(output, filePath) {
+    zlib.gzip(output, function(err, zipped) {
+        if (err) {
+            console.error("error writing to path ", filePath)
+            console.error(err);
+            return;
+        }
+
+        fs.writeFile(filePath,
+            zipped
+        );
+    });
 }

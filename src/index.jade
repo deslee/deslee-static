@@ -7,7 +7,7 @@ html
         if base
             base(href=base)
         | <link href='https://fonts.googleapis.com/css?family=Roboto+Slab:300|Open+Sans:300|Source+Code+Pro' rel='stylesheet' type='text/css'>
-        | <link rel="stylesheet" href="css/style.css">
+        link(rel="stylesheet" href="css/style."+ cache_hash +".cached.css")
         | <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
         if meta_description
             meta(name="description", content=meta_description.slice(0, Math.min(155, meta_description.length)))

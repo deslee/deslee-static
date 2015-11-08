@@ -11,7 +11,7 @@ hr.lg-hide
     form(action="https://emailsender-deslee.rhcloud.com/", method="post")
         input(hidden type="text" value="")
         label(for='email') Your Email
-        input#email.block.field.col-12(name='email', type='email')
+        input#email.block.field.col-12(name='email', type='email', required)
         label(for='message') Message
-        textarea#message.block.field.col-12(name='message')
-        input.btn.btn-primary.mt1(type='submit')
+        textarea#message.block.field.col-12(name='message', required)
+        input.btn.btn-primary.mt1(type='submit' value="Submit")

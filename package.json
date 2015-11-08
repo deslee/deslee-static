@@ -4,10 +4,21 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "npm run watch & npm run serve",
-    "watch": "watch \"npm run compile\" ./src",
     "compile": "node index.js",
-    "serve": "http-server ./output"
+    "serve": "http-server ./output",
+
+    "stageCacheImages": "aws s3 sync --delete ./output s3://deslee-stage --exclude \"*\" --include \"*.cached.jpg*\" --cache-control \"max-age=31536000\"",
+    "stageCachedZippedFiles": "aws s3 sync --delete ./output s3://deslee-stage --exclude \"*\" --include \"*.css*\" --cache-control \"max-age=31536000\" --content-encoding \"gzip\"",
+    "stageHtml": "aws s3 sync --delete ./output s3://deslee-stage --exclude \"*\" --include \"*.html\" --content-encoding \"gzip\" ",
+    "stageOutput": "aws s3 sync --delete ./output s3://deslee-stage --exclude \"*.cached.*\" --exclude \"*.html\" ",
+    "stage": "npm run stageCacheImages & npm run stageCachedZippedFiles & npm run stageHtml & npm run stageOutput",
+
+
+    "publishCacheImages": "aws s3 sync ./output s3://deslee --exclude \"*\" --include \"*.cached.jpg*\" --cache-control \"max-age=31536000\"",
+    "publishCachedZippedFiles": "aws s3 sync ./output s3://deslee --exclude \"*\" --include \"*.css*\" --cache-control \"max-age=31536000\" --content-encoding \"gzip\"",
+    "publishHtml": "aws s3 sync ./output s3://deslee --exclude \"*\" --include \"*.html\" --content-encoding \"gzip\" ",
+    "publishOutput": "aws s3 sync ./output s3://deslee --exclude \"*.cached.*\" --exclude \"*.html\" ",
+    "publish": "npm run publishCacheImages & npm run publishCachedZippedFiles & npm run publishHtml & npm run publishOutput"
   },
   "author": "",
   "license": "ISC",
