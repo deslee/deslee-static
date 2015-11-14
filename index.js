@@ -8,6 +8,14 @@ var zlib = require('zlib');
 var crypto = require('crypto');
 var stream = require('stream');
 
+var debug = false;
+
+process.argv.forEach(function(val, index, array) {
+    if (index == 0 && val == "debug") {
+        debug = true;
+    }
+});
+
 var paginator_generator = require('./paginator_generator');
 
 /* clean */
@@ -62,7 +70,10 @@ fs.readFile('./src/styles/base.css', 'utf8', function(err, data) {
     s.push(output);
     s.push(null);
 
-    s.pipe(zlib.createGzip()).pipe(fs.createWriteStream('./output/css/style.' + scope.cache_hash + '.cached.css'));
+    if (debug) {
+        s = s.pipe(zlib.createGzip());
+    }
+    s.pipe(fs.createWriteStream('./output/css/style.' + scope.cache_hash + '.cached.css'));
 });
 
 /* WRITING PHASE */
@@ -262,8 +273,8 @@ function sort_posts(post_a, post_b) {
 }
 
 
-function writeCompressedOutputToFile(output, filePath) {
-    zlib.gzip(output, function(err, zipped) {
+function writeCompressedOutputToFile(input, filePath) {
+    var writeFunc = function(err, output) {
         if (err) {
             console.error("error writing to path ", filePath)
             console.error(err);
@@ -271,7 +282,12 @@ function writeCompressedOutputToFile(output, filePath) {
         }
 
         fs.writeFile(filePath,
-            zipped
+            output
         );
-    });
+    };
+    if (debug) {
+        zlib.gzip(input, writeFunc);
+    } else {
+        writeFunc(null, input);
+    }
 }

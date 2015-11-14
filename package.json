@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "compile": "node index.js",
+    "compile-no-zip": "node index.js debug",
     "serve": "http-server ./output",
 
     "stageCacheImages": "aws s3 sync --delete ./output s3://deslee-stage --exclude \"*\" --include \"*.cached.jpg*\" --cache-control \"max-age=31536000\"",

@@ -1,7 +1,7 @@
 extends ./index.jade
 
 block body
-    body.container.flex.flex-column
+    body.container.flex.flex-column.lg-mt1
         div.clearfix.flex-grow
             header.px2.col.col-12.md-col-3.center.md-left
                 a(href="")
@@ -23,8 +23,7 @@ block body
             section.col.col-12.lg-col-3
                 include ./includes/sidebar.jade
 
-        footer.gray.left-align.p2
-            section Desmond Lee © 2015
+        include ./includes/footer.jade
 
         script(src="https://cdnjs.cloudflare.com/ajax/libs/instantclick/3.0.1/instantclick.min.js", data-no-instant)
         script(src="https://code.jquery.com/jquery-1.11.3.min.js", data-no-instant)

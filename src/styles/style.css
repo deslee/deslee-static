@@ -30,6 +30,8 @@ html {
 body {
     background: var(--white);
     min-height: 100vh;
+    transition: margin-top 300ms;
+    box-shadow: 0 10px 10px 1px #888;
 }
 
 pre {
