@@ -6,12 +6,10 @@ html
         title #{pagetitle ? pagetitle : title}
         if base
             base(href=base)
-        | <link href='https://fonts.googleapis.com/css?family=Roboto+Slab:300|Open+Sans:300|Source+Code+Pro' rel='stylesheet' type='text/css'>
-        link(rel="stylesheet" href="css/style."+ cache_hash +".cached.css")
-        | <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+        block head
         if meta_description
-            meta(name="description", content=meta_description.slice(0, Math.min(155, meta_description.length)))
-            meta(name="og:description", content=meta_description.slice(0, Math.min(155, meta_description.length)))
+            meta(name="description", content=meta_description.slice(0, Math.min(152, meta_description.length)) + '...')
+            meta(name="og:description", content=meta_description.slice(0, Math.min(152, meta_description.length)) + '...')
         if meta_author
             meta(name="author", content=meta_author)
         if logo

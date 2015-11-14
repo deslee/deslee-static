@@ -10,8 +10,12 @@ var stream = require('stream');
 
 var debug = false;
 
+var utils = require('./blogutils');
+
 process.argv.forEach(function(val, index, array) {
-    if (index == 0 && val == "debug") {
+    console.log(val, index);
+    if (index == 2 && val == "debug") {
+        console.log("running in debug mode");
         debug = true;
     }
 });
@@ -70,7 +74,7 @@ fs.readFile('./src/styles/base.css', 'utf8', function(err, data) {
     s.push(output);
     s.push(null);
 
-    if (debug) {
+    if (!debug) {
         s = s.pipe(zlib.createGzip());
     }
     s.pipe(fs.createWriteStream('./output/css/style.' + scope.cache_hash + '.cached.css'));
@@ -103,7 +107,7 @@ Object.keys(all_posts).forEach(function(slug) {
             )
         );
 
-        writeCompressedOutputToFile(postContent, path.join(post.outputPath, slug, "index.html"))
+        utils.writeCompressedOutputToFile(postContent, debug, path.join(post.outputPath, slug, "index.html"))
 
     });
 });
@@ -111,11 +115,9 @@ Object.keys(all_posts).forEach(function(slug) {
 // generate front page
 (function() {
 
-    var posts = Object.keys(all_posts).filter(function(slug) {
-        return !all_posts[slug].page;
-    }).map(function(slug) {
+    var posts = Object.keys(all_posts).filter(utils.filterOutPagesAndDrafts.bind(null, all_posts)).map(function(slug) {
         return all_posts[slug];
-    }).sort(sort_posts).reverse();
+    }).sort(utils.sort_posts).reverse();
 
     var paginator = paginator_generator(posts, 4);
     for (var i = 1; i <= paginator.count; ++i) {
@@ -139,7 +141,7 @@ Object.keys(all_posts).forEach(function(slug) {
                 )
             );
 
-            writeCompressedOutputToFile(indexContent, fileName)
+            utils.writeCompressedOutputToFile(indexContent, debug, fileName)
         }.bind(null, i));
     }
 
@@ -158,7 +160,7 @@ Object.keys(all_posts).forEach(function(slug) {
             }
 
 
-            var paginator = paginator_generator(tags[tag].sort(sort_posts).reverse(), 5);
+            var paginator = paginator_generator(tags[tag].sort(utils.sort_posts).reverse(), 5);
             for (var i = 1; i <= paginator.count; ++i) {
 
                 var fileName = i == 1 ?
@@ -185,7 +187,7 @@ Object.keys(all_posts).forEach(function(slug) {
                     )
 
 
-                    writeCompressedOutputToFile(tagsPageContent, fileName)
+                    utils.writeCompressedOutputToFile(tagsPageContent, debug, fileName)
                 }.bind(null, i));
             }
         });
@@ -198,11 +200,9 @@ Object.keys(all_posts).forEach(function(slug) {
 
 (function() {
 
-    var posts = Object.keys(all_posts).filter(function(slug) {
-        return !all_posts[slug].page;
-    }).map(function(slug) {
+    var posts = Object.keys(all_posts).filter(utils.filterOutPagesAndDrafts.bind(null, all_posts)).map(function(slug) {
         return all_posts[slug];
-    }).sort(sort_posts).reverse();
+    }).sort(utils.sort_posts).reverse();
 
     var archiveTemplate = templates['archive'];
 
@@ -221,7 +221,7 @@ Object.keys(all_posts).forEach(function(slug) {
                 pagetitle: 'Archive'
             }
         ));
-        writeCompressedOutputToFile(archivesPageContent, path.join(archiveTemplate.outputPath, "index.html"))
+        utils.writeCompressedOutputToFile(archivesPageContent, debug, path.join(archiveTemplate.outputPath, "index.html"))
 
 
     });
@@ -239,14 +239,14 @@ var notFoundTemplate = templates['404'];
             return;
         }
 
-        writeCompressedOutputToFile(notFoundTemplate.compile(
+        utils.writeCompressedOutputToFile(notFoundTemplate.compile(
             Object.assign({},
                 scope,
                 {
                     pagetitle: 'Archive'
                 }
             )
-        ), path.join(notFoundTemplate.outputPath, "404.html"))
+        ), debug, path.join(notFoundTemplate.outputPath, "404.html"))
 
 
     });
@@ -259,35 +259,3 @@ var notFoundTemplate = templates['404'];
     fs.createReadStream("./src/favicon.ico").pipe(fs.createWriteStream("./output/favicon.ico"));
     fs.createReadStream("./src/face-sm.jpg").pipe(fs.createWriteStream("./output/face-sm." + scope.cache_hash + ".cached.jpg"));
 })();
-
-/* utility functions */
-// sort function
-function sort_posts(post_a, post_b) {
-    if (post_a.date.isBefore(post_b.date)) {
-        return -1;
-    } else if (post_a.date.isSame(post_b.date, "day")) {
-        return 0;
-    } else {
-        return 1;
-    }
-}
-
-
-function writeCompressedOutputToFile(input, filePath) {
-    var writeFunc = function(err, output) {
-        if (err) {
-            console.error("error writing to path ", filePath)
-            console.error(err);
-            return;
-        }
-
-        fs.writeFile(filePath,
-            output
-        );
-    };
-    if (debug) {
-        zlib.gzip(input, writeFunc);
-    } else {
-        writeFunc(null, input);
-    }
-}

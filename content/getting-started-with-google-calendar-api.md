@@ -4,6 +4,7 @@ date:    2014-11-24
 tags:
 - apis
 - dev
+draft: true
 ---
 
 I have begun experimenting with [Google Apps Application APIs][0], with the intention of building a Javascript client-side application to interface with Google Calendar. I'm going to demonstrate what I've learned with a scenario flow for accessing the Google Calendar REST API.

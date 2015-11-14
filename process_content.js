@@ -4,9 +4,12 @@ var fs = require('fs');
 var path = require('path');
 var marked = require('meta-marked');
 var moment = require('moment');
+var utils = require('./blogutils')
 
 var tags = {};
 var all_posts = {};
+
+var CONTENT_SUMMARY_COUNT = 20;
 
 fs.readdirSync('./content').forEach(function(file) {
     var content = fs.readFileSync(path.join('./content', file), 'utf-8');
@@ -28,12 +31,17 @@ function processMarkdownContent(slug, content) {
     res.meta.html = res.html;
     res.meta.slug = slug;
     res.meta.date = moment(res.meta.date);
-    res.meta.preview = res.html.replace(/(<([^>]+)>)/ig, '').split(" ").slice(0, content.summary_count ? content.summary_count : 20).join(' ');
+
+    var chunks = res.html.replace(/(<([^>]+)>)/ig, '').split(" ");
+
+    res.meta.preview = chunks.slice(0, Math.min(chunks.length-1, CONTENT_SUMMARY_COUNT)).join(' ');
 
     var post = all_posts[slug] = res.meta;
     if (post.tags && post.tags.constructor === Array) {
         post.tags.forEach(function(tag) {
-            addTag(tag, post);
+            if (!post.page && !post.draft) {
+                addTag(tag, post);
+            }
         });
     }
 }

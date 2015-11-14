@@ -1,6 +1,7 @@
 ---
 title:   Static blog using React and Flux
 date:    2014-11-22
+draft: true
 tags:
   - react
   - dev

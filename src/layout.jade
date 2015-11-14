@@ -1,5 +1,10 @@
 extends ./index.jade
 
+block head
+    | <link href='https://fonts.googleapis.com/css?family=Roboto+Slab:300|Open+Sans:400|Source+Code+Pro' rel='stylesheet' type='text/css'>
+    link(rel="stylesheet" href="css/style." + cache_hash + ".cached.css")
+    | <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+
 block body
     body.container.flex.flex-column.lg-mt1
         div.clearfix.flex-grow
